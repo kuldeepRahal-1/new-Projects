@@ -23,6 +23,7 @@ let completed = [];
 let working = [];
 
 let createTodo = document.getElementById("create");
+let mainContainer=document.getElementById("main");
 let container1 = document.getElementById("cont1");
 let container2 = document.getElementById("cont2");
 let container3 = document.getElementById("cont3");
@@ -114,7 +115,6 @@ function renderDisplay(container, data) {
     container.innerHTML = `<p>no task yet</p>`;
     return;
   }
-
   target.forEach((t) => {
     let card = document.createElement("div");
     card.classList.add("card");
@@ -162,3 +162,24 @@ container2.addEventListener("drop", (e) => {
   renderDisplay(container1, todos);
   renderDisplay(container2, completed);
 });
+
+mainContainer.addEventListener("click", (e) => {
+  if (e.target.classList.contains("Delete")) {
+    const taskId = e.target.value;
+
+    todos = todos.filter(t => t.id !== taskId);
+    working = working.filter(t => t.id !== taskId);
+    completed = completed.filter(t => t.id !== taskId);
+
+    renderDisplay(container1, todos);
+    renderDisplay(container2, completed);
+    renderDisplay(container3, working);
+  }
+});
+
+
+//if i use one db for all 3 
+let todosDb=[];
+let completedTodos=todosDb.filter((t)=>t.status===true&&t.user===currUser);
+let pendingTodos=todosDb.filter((t)=>t.status===false&&t.user===currUser);
+let userTodos=todosDb.filter((t)=>t.user===currUser);

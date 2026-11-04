@@ -168,3 +168,26 @@ const PassInp=()=>{
     </>
   )
 }
+
+
+const login=asyncHandler(async(req,res)=>{
+  const {email,pass}=req.body;
+  const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+  if(!email||!emailRegex.test(email)||!pass){
+    return res.status(400).json({message:"invalid credentials"})
+  }
+  let user=await User.findOne({email});
+  if(!user){
+    return res.status(400).json({message:"invalid credentials"})
+  }
+  let matchPass=await bcrypt.compare(pass,user.password);
+  if(!matchPass){
+    return res.status(400).json({message:"invalid credentials"})
+  }
+  let token=jwt.sign({id:user._id,role:user.role},process.env.SECRET,{expiresIn:"1d"});
+  res.cookie("token",token,{
+    httpOnly:true,
+    secure:false
+  })
+  return res.status(200).json({message:"user loged in success"})
+})
